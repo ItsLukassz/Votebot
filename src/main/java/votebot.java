@@ -1,8 +1,17 @@
 import com.github.javafaker.Faker;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.DesiredCapabilities;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 
@@ -25,27 +34,51 @@ import java.util.Scanner;
 public class votebot {
 
     public static final String USERNAME_ID = "player";
-    public static final String VOTE_BTN_XPATH = "xpath=//form[@id='voteForm']/div[2]/button";
-
 
     public static void main(String[] args) throws IOException {
 
+        // setting everything up
+
+        // opening the proxies.txt file
+        //FileInputStream fstream = new FileInputStream("proxys.txt");
+        //BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
+
+        // setting everything for for chrome
         System.setProperty("webdriver.chrome.driver", "src/webdriver/chromedriver97.exe");
         System.out.println("\n" + "Kiek votes?");
         Scanner in = new Scanner(System.in);
         int amount = in.nextInt();
-        int proxynr = 2;
+        int proxynr = 5;
         while (amount > 0) {
+            String proxylist = Files.readAllLines(Paths.get("proxys.txt")).get(proxynr);
 
-            //asdasd
-            ChromeDriver browser = new ChromeDriver();
-            browser.get("https://m-craft.lt/vote/mc-meemso-eu-factions-mcmmo/191c2b33138bae018b0464d479d317e8");
+            ChromeOptions chromeOptions = new ChromeOptions();
 
-            //WebElement element2 = browser.findElement(By.xpath("/html/body/div[2]/div[1]/button"));
-            //JavascriptExecutor executor2 = (JavascriptExecutor)browser;
-            //executor2.executeScript("arguments[0].click();", element2);
+            Proxy proxy = new Proxy();
+            proxy.setAutodetect(false);
+            proxy.setHttpProxy(proxylist);
+            proxy.setSslProxy(proxylist);
+            proxy.setNoProxy("no_proxy-var");
+
+            chromeOptions.setCapability("proxy", proxy);
+
+            //creating the browser window and opening m-craft page
+            ChromeDriver browser = new ChromeDriver(chromeOptions);
+            browser.get("https://m-craft.lt/vote/mc-meemso-eu-factions-mcmmo/c46fcd272434e15974679b53cde90381");
 
 
+            // waiting for page to load for 3 sec
+            try {
+                // laukiame 3 sec
+                Thread.sleep(3000);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+
+            // clicking balsuoti button to open the main voting page
+            // WebElement click2 = browser.findElement(By.xpath("//button[contains(.,'Balsuoti')]"));
+            //JavascriptExecutor executor2 = (JavascriptExecutor) browser;
+            //executor2.executeScript("arguments[0].click();", click2);
 
             // username field
 
@@ -64,21 +97,30 @@ public class votebot {
 
             // vote button confirm
 
-
-            WebElement element = browser.findElement(By.xpath("//*[@id=\"voteForm\"]/div[3]/button"));
-            JavascriptExecutor executor = (JavascriptExecutor)browser;
-            executor.executeScript("arguments[0].click();", element);
-
-
-            // Reikalingas tam kad nemestu socket exeption klaidos
             try {
-                // laukiame 1 sec
+                // laukiame 2 sec
+                Thread.sleep(2000);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+
+
+            WebElement click = browser.findElement(By.xpath("//button[contains(.,'Balsuoti')]"));
+            JavascriptExecutor executor = (JavascriptExecutor) browser;
+            executor.executeScript("arguments[0].click();", click);
+
+
+            // palaukiame kol rankiniu budu ispresime captcha
+            try {
+                // laukiame 10 sec
                 Thread.sleep(10000);
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
             browser.close();
+
             amount = amount - 1;
+            proxynr++;
 
         }
 
