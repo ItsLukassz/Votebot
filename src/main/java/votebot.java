@@ -1,28 +1,31 @@
 import com.github.javafaker.Faker;
-import com.sun.jna.platform.win32.Netapi32Util;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
 import org.sikuli.script.FindFailed;
+import org.sikuli.script.ImagePath;
 import org.sikuli.script.Screen;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Scanner;
 
 
 public class votebot {
 
     public static final String USERNAME_ID = "player";
-    public static final String Link = "https://m-craft.lt/vote/mc-meemso-eu-factions-mcmmo/e25b01ec8f4032b14b7b01b3a6c21a2e";
+    public static final String Link = "https://m-craft.lt/vote/mc-meemso-eu-factions-mcmmo/7a851a5b36e54f052ed5144ce506104e";
+    // using absolute path cuz i cant be bothered with solving this issue for now
+    public static final String AbsoluteSolverPath = "C:\\Users\\PC\\IdeaProjects\\votebot\\src\\Images\\solver";
+
     static ChromeDriver browser;
 
     public static void main(String[] args) throws FindFailed, InterruptedException {
-
         // setting everything up
+        ImagePath.add(System.getProperty("src/Images/solver.png"));
+        System.getProperty("user.dir");
         System.setProperty("webdriver.chrome.driver", "src/webdriver/chromedriver97.exe");
-        System.out.println("\n" + "Kiek votes?");
+        System.out.println("\n" + "How many votes?");
         Scanner in = new Scanner(System.in);
         int amount = in.nextInt();
         while (amount > 0) {
@@ -61,9 +64,10 @@ public class votebot {
 
     }
 
-    public static void CaptchaSolve() {
+    public static void CaptchaSolve() throws FindFailed {
         System.out.println("clicking captcha solve button");
-
+        Screen s = new Screen();
+        s.doubleClick(AbsoluteSolverPath);
     }
 
     public static void ClickVote() {

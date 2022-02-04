@@ -2,6 +2,8 @@
 
 This is a test program to learn selenium using proxies and trying to solve captcha using extensions
 
+This is used for m-craft.lt voting site to boost your server votes
+
 ## Issues
 
 1. Cant fully implement rotating proxies into the code because i do not have private proxies
